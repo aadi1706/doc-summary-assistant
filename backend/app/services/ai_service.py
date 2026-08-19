@@ -50,7 +50,7 @@ Document content:
 Write the summary now. Do not include headers like "Summary:" — just write the summary directly."""
 
     with client.messages.stream(
-        model="claude-3-5-haiku-20241022",
+        model="claude-haiku-4-5-20251001",
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}]
     ) as stream:
@@ -87,7 +87,7 @@ Document:
 ---"""
 
     response = client.messages.create(
-        model="claude-3-5-haiku-20241022",
+        model="claude-haiku-4-5-20251001",
         max_tokens=512,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -130,7 +130,7 @@ Document content:
     messages = history + [{"role": "user", "content": question}]
 
     with client.messages.stream(
-        model="claude-3-5-haiku-20241022",
+        model="claude-haiku-4-5-20251001",
         max_tokens=512,
         system=system_prompt,
         messages=messages
