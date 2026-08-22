@@ -138,3 +138,45 @@ Document content:
     ) as stream:
         for text_chunk in stream.text_stream:
             yield text_chunk
+
+
+async def stream_suggestions(text: str, doc_type: str) -> AsyncGenerator[str, None]:
+    """
+    Generate improvement suggestions for a document.
+    Returns structured JSON streamed as text.
+    """
+    max_chars = 8000
+    truncated = text[:max_chars]
+
+    doc_context = DOC_TYPE_CONTEXT.get(doc_type, DOC_TYPE_CONTEXT["general"])
+
+    prompt = f"""{doc_context}
+
+Analyse this document and provide 4-5 specific, actionable improvement suggestions.
+
+Return ONLY a valid JSON object in this exact format:
+{{
+  "suggestions": [
+    {{
+      "title": "Short title of the suggestion",
+      "category": "one of: Structure, Clarity, Content, Tone, Completeness",
+      "detail": "2-3 sentences explaining the issue and how to fix it"
+    }}
+  ]
+}}
+
+Be specific to this document — reference actual content where possible.
+Return only the JSON, no markdown fences, no explanation.
+
+Document:
+---
+{truncated}
+---"""
+
+    with client.messages.stream(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": prompt}]
+    ) as stream:
+        for text_chunk in stream.text_stream:
+            yield text_chunk

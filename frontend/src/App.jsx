@@ -5,6 +5,7 @@ import DocMeta from "./components/DocMeta";
 import SummaryPanel from "./components/SummaryPanel";
 import EntityCards from "./components/EntityCards";
 import ChatPanel from "./components/ChatPanel";
+import SuggestionsPanel from "./components/SuggestionsPanel";
 import { uploadDocument } from "./utils/api";
 
 const PIPELINE_STEPS = [
@@ -58,6 +59,7 @@ export default function App() {
     { key: "summary", label: "Summary" },
     { key: "entities", label: "Entities" },
     { key: "chat", label: "Chat" },
+    { key: "suggestions", label: "Suggestions" },
   ];
 
   return (
@@ -218,6 +220,7 @@ export default function App() {
             {activeTab === "summary" && <SummaryPanel doc={doc} />}
             {activeTab === "entities" && <EntityCards doc={doc} />}
             {activeTab === "chat" && <ChatPanel doc={doc} />}
+            {activeTab === "suggestions" && <SuggestionsPanel doc={doc} />}
           </>
         )}
       </main>

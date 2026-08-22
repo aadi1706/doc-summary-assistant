@@ -52,3 +52,29 @@ async def get_entities(request: EntityRequest):
         return {"entities": entities}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Entity extraction failed: {str(e)}")
+
+
+class SuggestionsRequest(BaseModel):
+    text: str
+    doc_type: str = "general"
+
+
+@router.post("/suggestions")
+async def get_suggestions(request: SuggestionsRequest):
+    """
+    Generate improvement suggestions for the document.
+    Returns a streamed JSON response.
+    """
+    if not request.text.strip():
+        raise HTTPException(status_code=400, detail="Document text is empty.")
+
+    from app.services.ai_service import stream_suggestions
+
+    async def generate():
+        try:
+            async for chunk in stream_suggestions(request.text, request.doc_type):
+                yield chunk
+        except Exception as e:
+            yield f'{{"error": "{str(e)}"}}'
+
+    return StreamingResponse(generate(), media_type="text/plain")
