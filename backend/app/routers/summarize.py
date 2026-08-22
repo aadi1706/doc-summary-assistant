@@ -26,7 +26,7 @@ async def summarize_stream(request: SummarizeRequest):
     if not request.text.strip():
         raise HTTPException(status_code=400, detail="Document text is empty.")
 
-    if request.length not in ["short", "medium", "long"]:
+    if request.length not in ["short", "medium", "long", "takeaways"]:
         raise HTTPException(status_code=400, detail="Length must be short, medium, or long.")
 
     async def generate():

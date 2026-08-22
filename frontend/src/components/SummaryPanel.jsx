@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Copy, Check, Loader } from "lucide-react";
+import { Sparkles, Copy, Check, Loader, ListChecks } from "lucide-react";
 import { streamSummary } from "../utils/api";
 
 const LENGTHS = [
@@ -8,34 +8,97 @@ const LENGTHS = [
   { key: "long", label: "Long", desc: "Full breakdown" },
 ];
 
+async function streamTakeaways(text, docType, onChunk) {
+  const res = await fetch("/api/summarize/stream", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text,
+      length: "takeaways",
+      doc_type: docType,
+    }),
+  });
+
+  if (!res.ok) throw new Error("Takeaways failed");
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    onChunk(chunk);
+  }
+}
+
+function renderText(text) {
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  );
+}
+
 export default function SummaryPanel({ doc }) {
   const [length, setLength] = useState("medium");
   const [summary, setSummary] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [takeaways, setTakeaways] = useState([]);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [loadingTakeaways, setLoadingTakeaways] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [rawTakeaways, setRawTakeaways] = useState("");
 
   async function handleSummarize() {
-    setLoading(true);
+    setLoadingSummary(true);
+    setLoadingTakeaways(true);
     setSummary("");
+    setTakeaways([]);
+    setRawTakeaways("");
     setError("");
 
+    // Stream summary
     try {
       await streamSummary(doc.text, length, doc.doc_type, (chunk) => {
         setSummary((prev) => prev + chunk);
       });
     } catch (e) {
       setError(e.message);
-    } finally {
-      setLoading(false);
+      setLoadingSummary(false);
+      setLoadingTakeaways(false);
+      return;
     }
+    setLoadingSummary(false);
+
+    // Stream takeaways
+    try {
+      let raw = "";
+      await streamTakeaways(doc.text, doc.doc_type, (chunk) => {
+        raw += chunk;
+        setRawTakeaways(raw);
+      });
+
+      // Parse bullet lines
+      const lines = raw
+        .split("\n")
+        .map((l) => l.replace(/^[-•*]\s*/, "").trim())
+        .filter((l) => l.length > 10);
+      setTakeaways(lines);
+    } catch (e) {
+      // takeaways failing shouldn't break summary
+      console.error("Takeaways error:", e);
+    }
+    setLoadingTakeaways(false);
   }
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(summary);
+    const full = summary + (takeaways.length ? "\n\nKey Takeaways:\n" + takeaways.map(t => `• ${t}`).join("\n") : "");
+    await navigator.clipboard.writeText(full);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
+
+  const loading = loadingSummary || loadingTakeaways;
 
   return (
     <div style={{
@@ -59,7 +122,6 @@ export default function SummaryPanel({ doc }) {
           <span style={{ fontWeight: 600, fontSize: "14px" }}>Summary</span>
         </div>
 
-        {/* Length toggle */}
         <div style={{
           display: "flex",
           background: "var(--surface-2)",
@@ -114,7 +176,7 @@ export default function SummaryPanel({ doc }) {
           </div>
         )}
 
-        {loading && !summary && (
+        {loadingSummary && !summary && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", padding: "8px 0" }}>
             <Loader size={14} style={{ animation: "spin 1s linear infinite" }} />
             <span style={{ fontSize: "13px" }}>Generating summary...</span>
@@ -123,14 +185,9 @@ export default function SummaryPanel({ doc }) {
 
         {summary && (
           <>
-            <p style={{
-              lineHeight: 1.75,
-              fontSize: "14px",
-              color: "var(--text)",
-              whiteSpace: "pre-wrap",
-            }}>
-              {summary}
-              {loading && (
+            <p style={{ lineHeight: 1.75, fontSize: "14px", color: "var(--text)" }}>
+              {renderText(summary)}
+              {loadingSummary && (
                 <span style={{
                   display: "inline-block",
                   width: 2,
@@ -143,21 +200,65 @@ export default function SummaryPanel({ doc }) {
               )}
             </p>
 
+            {/* Takeaways */}
+            {(loadingTakeaways || takeaways.length > 0) && (
+              <div style={{
+                marginTop: 20,
+                background: "var(--surface-2)",
+                border: "1px solid var(--border)",
+                borderRadius: 10,
+                padding: "14px 16px",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
+                  <ListChecks size={14} color="var(--accent)" />
+                  <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Key Takeaways
+                  </span>
+                </div>
+
+                {loadingTakeaways && takeaways.length === 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
+                    <Loader size={12} style={{ animation: "spin 1s linear infinite" }} />
+                    <span style={{ fontSize: "13px" }}>Extracting key points...</span>
+                  </div>
+                )}
+
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+                  {takeaways.map((point, i) => (
+                    <li key={i} style={{ display: "flex", gap: 10, fontSize: "13px", lineHeight: 1.6 }}>
+                      <span style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        background: "var(--accent-dim)",
+                        color: "var(--accent)",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        marginTop: 2,
+                      }}>
+                        {i + 1}
+                      </span>
+                      <span>{renderText(point)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {!loading && (
               <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
                 <button
                   onClick={handleCopy}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "7px 14px",
-                    borderRadius: 7,
-                    border: "1px solid var(--border)",
-                    background: "transparent",
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "7px 14px", borderRadius: 7,
+                    border: "1px solid var(--border)", background: "transparent",
                     color: copied ? "var(--success)" : "var(--text-muted)",
-                    fontSize: "13px",
-                    cursor: "pointer",
+                    fontSize: "13px", cursor: "pointer",
                   }}
                 >
                   {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -166,16 +267,10 @@ export default function SummaryPanel({ doc }) {
                 <button
                   onClick={handleSummarize}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "7px 14px",
-                    borderRadius: 7,
-                    border: "1px solid var(--border)",
-                    background: "transparent",
-                    color: "var(--text-muted)",
-                    fontSize: "13px",
-                    cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "7px 14px", borderRadius: 7,
+                    border: "1px solid var(--border)", background: "transparent",
+                    color: "var(--text-muted)", fontSize: "13px", cursor: "pointer",
                   }}
                 >
                   <Sparkles size={13} />
@@ -187,21 +282,13 @@ export default function SummaryPanel({ doc }) {
         )}
 
         {error && (
-          <p style={{ color: "var(--error)", fontSize: "13px", marginTop: 8 }}>
-            {error}
-          </p>
+          <p style={{ color: "var(--error)", fontSize: "13px", marginTop: 8 }}>{error}</p>
         )}
       </div>
 
       <style>{`
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );
