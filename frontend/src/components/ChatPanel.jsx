@@ -9,6 +9,14 @@ const SUGGESTIONS = [
   "What are the important dates?",
 ];
 
+function renderText(text) {
+  // Simple bold markdown renderer
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  );
+}
+
 export default function ChatPanel({ doc }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -151,27 +159,14 @@ export default function ChatPanel({ doc }) {
               borderRadius: msg.role === "user" ? "12px 4px 12px 12px" : "4px 12px 12px 12px",
               padding: "10px 14px",
               fontSize: "13px",
-              lineHeight: 1.6,
+              lineHeight: 1.7,
               color: msg.error ? "var(--error)" : "var(--text)",
               maxWidth: "80%",
-              whiteSpace: "pre-wrap",
             }}>
-              {msg.content || (msg.streaming && (
-                <span style={{ color: "var(--text-muted)" }}>
-                  <Loader size={12} style={{ animation: "spin 1s linear infinite", display: "inline" }} />
-                </span>
-              ))}
-              {msg.streaming && msg.content && (
-                <span style={{
-                  display: "inline-block",
-                  width: 2,
-                  height: "1em",
-                  background: "var(--accent)",
-                  marginLeft: 2,
-                  verticalAlign: "middle",
-                  animation: "blink 1s step-end infinite",
-                }} />
-              )}
+              {msg.streaming && !msg.content
+                ? <Loader size={12} color="var(--text-muted)" style={{ animation: "spin 1s linear infinite" }} />
+                : <span>{renderText(msg.content)}</span>
+              }
             </div>
           </div>
         ))}
@@ -222,7 +217,6 @@ export default function ChatPanel({ doc }) {
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
       `}</style>
     </div>
   );
