@@ -33,10 +33,25 @@ async function streamTakeaways(text, docType, onChunk) {
 }
 
 function renderText(text) {
-  const parts = text.split(/\*\*(.*?)\*\*/g);
-  return parts.map((part, i) =>
-    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-  );
+  return text.split("\n").map((line, lineIdx) => {
+    // Strip markdown headings
+    const stripped = line.replace(/^#{1,3}\s+/, "");
+    const isHeading = stripped !== line;
+
+    const parts = stripped.split(/\*\*(.*?)\*\*/g);
+    const rendered = parts.map((part, i) =>
+      i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+    );
+
+    return (
+      <span key={lineIdx}>
+        {isHeading
+          ? <strong style={{ fontSize: "15px" }}>{rendered}</strong>
+          : rendered}
+        {"\n"}
+      </span>
+    );
+  });
 }
 
 export default function SummaryPanel({ doc }) {
