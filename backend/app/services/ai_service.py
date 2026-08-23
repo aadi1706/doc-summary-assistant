@@ -9,9 +9,21 @@ load_dotenv()
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 SUMMARY_PROMPTS = {
-    "short": "Write a concise summary in 3-5 sentences. Focus only on the core message.",
-    "medium": "Write a structured summary in 2-3 paragraphs. Cover the main points and key details.",
-    "long": "Write a comprehensive summary covering all major sections, key arguments, and important details. Use paragraphs with clear structure.",
+    "short": """Write a concise summary in 3-5 sentences. Focus only on the core message.
+
+Then add a section starting exactly with the line:
+KEY_TAKEAWAYS:
+List 4-5 key takeaways as bullet points starting with -""",
+    "medium": """Write a structured summary in 2-3 paragraphs covering the main points and key details.
+
+Then add a section starting exactly with the line:
+KEY_TAKEAWAYS:
+List 4-5 key takeaways as bullet points starting with -""",
+    "long": """Write a comprehensive summary covering all major sections and key arguments.
+
+Then add a section starting exactly with the line:
+KEY_TAKEAWAYS:
+List 4-5 key takeaways as bullet points starting with -""",
     "takeaways": "List exactly 4-5 key takeaways from this document as short bullet points. Each point should be one sentence. Start each line with a dash (-). No intro text, just the bullets.",
 }
 

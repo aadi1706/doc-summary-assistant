@@ -9,30 +9,6 @@ const LENGTHS = [
   { key: "long", label: "Long", desc: "Full breakdown" },
 ];
 
-async function streamTakeaways(text, docType, onChunk) {
-  const res = await fetch("/api/summarize/stream", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      text,
-      length: "takeaways",
-      doc_type: docType,
-    }),
-  });
-
-  if (!res.ok) throw new Error("Takeaways failed");
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value, { stream: true });
-    onChunk(chunk);
-  }
-}
-
 function renderText(text) {
   return text.split("\n").map((line, lineIdx) => {
     // Strip markdown headings
@@ -73,38 +49,27 @@ export default function SummaryPanel({ doc }) {
     setRawTakeaways("");
     setError("");
 
-    // Stream summary
     try {
+      let full = "";
       await streamSummary(doc.text, length, doc.doc_type, (chunk) => {
-        setSummary((prev) => prev + chunk);
+        full += chunk;
+        // Split on KEY_TAKEAWAYS marker
+        const parts = full.split("KEY_TAKEAWAYS:");
+        setSummary(parts[0].trim());
+        if (parts[1]) {
+          const lines = parts[1]
+            .split("\n")
+            .map((l) => l.replace(/^[-•*]\s*/, "").trim())
+            .filter((l) => l.length > 10);
+          setTakeaways(lines);
+        }
       });
     } catch (e) {
       setError(e.message);
+    } finally {
       setLoadingSummary(false);
       setLoadingTakeaways(false);
-      return;
     }
-    setLoadingSummary(false);
-
-    // Stream takeaways
-    try {
-      let raw = "";
-      await streamTakeaways(doc.text, doc.doc_type, (chunk) => {
-        raw += chunk;
-        setRawTakeaways(raw);
-      });
-
-      // Parse bullet lines
-      const lines = raw
-        .split("\n")
-        .map((l) => l.replace(/^[-•*]\s*/, "").trim())
-        .filter((l) => l.length > 10);
-      setTakeaways(lines);
-    } catch (e) {
-      // takeaways failing shouldn't break summary
-      console.error("Takeaways error:", e);
-    }
-    setLoadingTakeaways(false);
   }
 
   function handleDownload() {
