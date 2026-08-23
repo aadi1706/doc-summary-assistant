@@ -5,7 +5,7 @@ export default function UploadZone({ onFile, loading }) {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef(null);
 
-  const ACCEPTED = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+  const ACCEPTED = ["application/pdf"];
 
   function handleFile(file) {
     if (!file) return;
@@ -45,7 +45,7 @@ export default function UploadZone({ onFile, loading }) {
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,image/jpeg,image/png,image/webp"
+        accept=".pdf"
         style={{ display: "none" }}
         onChange={(e) => handleFile(e.target.files[0])}
         disabled={loading}
@@ -71,7 +71,7 @@ export default function UploadZone({ onFile, loading }) {
       <div style={{ display: "flex", gap: "10px", marginTop: 4 }}>
         {[
           { icon: TbFileTypePdf, label: "PDF" },
-          { icon: TbPhoto, label: "JPG / PNG" },
+          
         ].map(({ icon: Icon, label }) => (
           <span key={label} style={{
             display: "flex", alignItems: "center", gap: 5,
