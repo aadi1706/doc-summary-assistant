@@ -1,4 +1,4 @@
-import { FileText, Image, BookOpen, Hash, Clock } from "lucide-react";
+import { TbFileTypePdf, TbPhoto, TbBook, TbHash, TbClock } from "react-icons/tb";
 
 const DOC_TYPE_LABELS = {
   invoice: "Invoice",
@@ -17,7 +17,7 @@ function readTime(wordCount) {
 }
 
 export default function DocMeta({ doc }) {
-  const Icon = doc.file_type === "pdf" ? FileText : Image;
+  const Icon = doc.file_type === "pdf" ? TbFileTypePdf : TbPhoto;
   const typeLabel = DOC_TYPE_LABELS[doc.doc_type] || "Document";
 
   return (
@@ -55,9 +55,9 @@ export default function DocMeta({ doc }) {
 
       <div style={{ display: "flex", gap: "24px", flexShrink: 0 }}>
         {[
-          { icon: BookOpen, value: doc.page_count, label: doc.page_count === 1 ? "page" : "pages" },
-          { icon: Hash, value: doc.word_count?.toLocaleString(), label: "words" },
-          { icon: Clock, value: readTime(doc.word_count), label: "read time" },
+          { icon: TbBook, value: doc.page_count, label: doc.page_count === 1 ? "page" : "pages" },
+          { icon: TbHash, value: doc.word_count?.toLocaleString(), label: "words" },
+          { icon: TbClock, value: readTime(doc.word_count), label: "read time" },
         ].map(({ icon: Icon2, value, label }) => (
           <div key={label} style={{ textAlign: "center" }}>
             <p style={{ fontWeight: 600, fontSize: "14px" }}>{value}</p>

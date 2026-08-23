@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Sparkles, Copy, Check, Loader, ListChecks, Download } from "lucide-react";
+import { TbSparkles, TbCopy, TbCheck, TbListCheck, TbDownload } from "react-icons/tb";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { streamSummary } from "../utils/api";
 
 const LENGTHS = [
@@ -106,7 +107,7 @@ export default function SummaryPanel({ doc }) {
     setLoadingTakeaways(false);
   }
 
-  function handleDownload() {
+  function handleTbDownload() {
     const filename = doc.filename.replace(/\.[^.]+$/, "") + "_summary.txt";
     const full = [
       `DOCUMENT SUMMARY — ${doc.filename}`,
@@ -127,7 +128,7 @@ export default function SummaryPanel({ doc }) {
     URL.revokeObjectURL(url);
   }
 
-  async function handleCopy() {
+  async function handleTbCopy() {
     const full = summary + (takeaways.length ? "\n\nKey Takeaways:\n" + takeaways.map(t => `• ${t}`).join("\n") : "");
     await navigator.clipboard.writeText(full);
     setCopied(true);
@@ -154,7 +155,7 @@ export default function SummaryPanel({ doc }) {
         flexWrap: "wrap",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Sparkles size={16} color="var(--accent)" />
+          <TbSparkles size={16} color="var(--accent)" />
           <span style={{ fontWeight: 600, fontSize: "14px" }}>Summary</span>
         </div>
 
@@ -214,7 +215,7 @@ export default function SummaryPanel({ doc }) {
 
         {loadingSummary && !summary && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", padding: "8px 0" }}>
-            <Loader size={14} style={{ animation: "spin 1s linear infinite" }} />
+            <AiOutlineLoading3Quarters size={14} style={{ animation: "spin 1s linear infinite" }} />
             <span style={{ fontSize: "13px" }}>Generating summary...</span>
           </div>
         )}
@@ -246,7 +247,7 @@ export default function SummaryPanel({ doc }) {
                 padding: "14px 16px",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
-                  <ListChecks size={14} color="var(--accent)" />
+                  <ListTbChecks size={14} color="var(--accent)" />
                   <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     Key Takeaways
                   </span>
@@ -288,7 +289,7 @@ export default function SummaryPanel({ doc }) {
             {!loading && (
               <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
                 <button
-                  onClick={handleCopy}
+                  onClick={handleTbCopy}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "7px 14px", borderRadius: 7,
@@ -297,11 +298,11 @@ export default function SummaryPanel({ doc }) {
                     fontSize: "13px", cursor: "pointer",
                   }}
                 >
-                  {copied ? <Check size={13} /> : <Copy size={13} />}
-                  {copied ? "Copied!" : "Copy"}
+                  {copied ? <TbCheck size={13} /> : <TbCopy size={13} />}
+                  {copied ? "Copied!" : "TbCopy"}
                 </button>
                 <button
-                  onClick={handleDownload}
+                  onClick={handleTbDownload}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "7px 14px", borderRadius: 7,
@@ -310,7 +311,7 @@ export default function SummaryPanel({ doc }) {
                     fontSize: "13px", cursor: "pointer",
                   }}
                 >
-                  <Download size={13} />
+                  <TbDownload size={13} />
                   Export
                 </button>
                 <button
@@ -322,7 +323,7 @@ export default function SummaryPanel({ doc }) {
                     color: "var(--text-muted)", fontSize: "13px", cursor: "pointer",
                   }}
                 >
-                  <Sparkles size={13} />
+                  <TbSparkles size={13} />
                   Regenerate
                 </button>
               </div>

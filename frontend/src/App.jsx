@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { FileSearch, ExternalLink, RotateCcw, Loader } from "lucide-react";
+import { TbFileSearch, TbRotateClockwise, TbBrandGithub } from "react-icons/tb";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import UploadZone from "./components/UploadZone";
 import DocMeta from "./components/DocMeta";
 import SummaryPanel from "./components/SummaryPanel";
@@ -28,7 +29,6 @@ export default function App() {
     setDoc(null);
     setPipelineStep(0);
 
-    // simulate step progression
     const stepInterval = setInterval(() => {
       setPipelineStep((s) => Math.min(s + 1, PIPELINE_STEPS.length - 2));
     }, 600);
@@ -67,6 +67,7 @@ export default function App() {
       {/* Nav */}
       <nav style={{
         borderBottom: "1px solid var(--border)",
+        background: "var(--surface)",
         padding: "0 24px",
         height: 56,
         display: "flex",
@@ -74,18 +75,18 @@ export default function App() {
         justifyContent: "space-between",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <FileSearch size={20} color="var(--accent)" />
+          <TbFileSearch size={22} color="var(--accent)" />
           <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: "16px" }}>
             DocuSense
           </span>
         </div>
         <a
-          href="https://github.com/aadi1706"
+          href="https://github.com/aadi1706/doc-summary-assistant"
           target="_blank"
           rel="noreferrer"
           style={{ color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6, fontSize: "13px", textDecoration: "none" }}
         >
-          <ExternalLink size={15} />
+          <TbBrandGithub size={17} />
           GitHub
         </a>
       </nav>
@@ -105,7 +106,6 @@ export default function App() {
 
             <UploadZone onFile={handleFile} loading={uploading} />
 
-            {/* Pipeline progress */}
             {uploading && (
               <div style={{
                 marginTop: 20,
@@ -126,16 +126,12 @@ export default function App() {
                       opacity: done || active ? 1 : 0.3,
                     }}>
                       <div style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "50%",
+                        width: 20, height: 20, borderRadius: "50%",
                         background: done ? "var(--success)" : active ? "var(--accent)" : "var(--border)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        display: "flex", alignItems: "center", justifyContent: "center",
                         flexShrink: 0,
                       }}>
-                        {active && <Loader size={11} color="#fff" style={{ animation: "spin 1s linear infinite" }} />}
+                        {active && <AiOutlineLoading3Quarters size={11} color="#fff" style={{ animation: "spin 1s linear infinite" }} />}
                         {done && <span style={{ color: "#fff", fontSize: 10 }}>✓</span>}
                       </div>
                       <span style={{ fontSize: "13px", color: active ? "var(--text)" : "var(--text-muted)" }}>
@@ -150,8 +146,8 @@ export default function App() {
             {uploadError && (
               <div style={{
                 marginTop: 16,
-                background: "#ef444418",
-                border: "1px solid #ef444440",
+                background: "#dc262618",
+                border: "1px solid #dc262640",
                 borderRadius: 8,
                 padding: "12px 16px",
                 color: "var(--error)",
@@ -165,30 +161,23 @@ export default function App() {
 
         {doc && (
           <>
-            {/* Doc meta + reset */}
             <div style={{ marginBottom: 20 }}>
               <DocMeta doc={doc} />
               <button
                 onClick={handleReset}
                 style={{
                   marginTop: 10,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  background: "transparent",
-                  border: "none",
-                  color: "var(--text-muted)",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  padding: "4px 0",
+                  display: "flex", alignItems: "center", gap: 6,
+                  background: "transparent", border: "none",
+                  color: "var(--text-muted)", fontSize: "12px",
+                  cursor: "pointer", padding: "4px 0",
                 }}
               >
-                <RotateCcw size={12} />
+                <TbRotateClockwise size={13} />
                 Upload a different document
               </button>
             </div>
 
-            {/* Tabs */}
             <div style={{
               display: "flex",
               borderBottom: "1px solid var(--border)",
@@ -225,9 +214,7 @@ export default function App() {
         )}
       </main>
 
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}</style>
+      <style>{"@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }"}</style>
     </div>
   );
 }

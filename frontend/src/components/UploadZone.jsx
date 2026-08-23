@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { UploadCloud, FileText, Image } from "lucide-react";
+import { TbCloudUpload, TbFileTypePdf, TbPhoto } from "react-icons/tb";
 
 export default function UploadZone({ onFile, loading }) {
   const [dragging, setDragging] = useState(false);
@@ -19,28 +19,14 @@ export default function UploadZone({ onFile, loading }) {
   function onDrop(e) {
     e.preventDefault();
     setDragging(false);
-    const file = e.dataTransfer.files[0];
-    handleFile(file);
-  }
-
-  function onDragOver(e) {
-    e.preventDefault();
-    setDragging(true);
-  }
-
-  function onDragLeave() {
-    setDragging(false);
-  }
-
-  function onInputChange(e) {
-    handleFile(e.target.files[0]);
+    handleFile(e.dataTransfer.files[0]);
   }
 
   return (
     <div
       onDrop={onDrop}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
       onClick={() => !loading && inputRef.current?.click()}
       style={{
         border: `2px dashed ${dragging ? "var(--accent)" : "var(--border)"}`,
@@ -61,20 +47,16 @@ export default function UploadZone({ onFile, loading }) {
         type="file"
         accept=".pdf,image/jpeg,image/png,image/webp"
         style={{ display: "none" }}
-        onChange={onInputChange}
+        onChange={(e) => handleFile(e.target.files[0])}
         disabled={loading}
       />
 
       <div style={{
-        width: 56,
-        height: 56,
-        borderRadius: "12px",
+        width: 52, height: 52, borderRadius: "10px",
         background: "var(--accent-dim)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <UploadCloud size={28} color="var(--accent)" />
+        <TbCloudUpload size={26} color="var(--accent)" />
       </div>
 
       <div style={{ textAlign: "center" }}>
@@ -86,25 +68,18 @@ export default function UploadZone({ onFile, loading }) {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: "12px", marginTop: 4 }}>
+      <div style={{ display: "flex", gap: "10px", marginTop: 4 }}>
         {[
-          { icon: FileText, label: "PDF" },
-          { icon: Image, label: "JPG / PNG" },
+          { icon: TbFileTypePdf, label: "PDF" },
+          { icon: TbPhoto, label: "JPG / PNG" },
         ].map(({ icon: Icon, label }) => (
-          <span
-            key={label}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              fontSize: "12px",
-              color: "var(--text-muted)",
-              background: "var(--surface-2)",
-              border: "1px solid var(--border)",
-              borderRadius: 6,
-              padding: "4px 10px",
-            }}
-          >
+          <span key={label} style={{
+            display: "flex", alignItems: "center", gap: 5,
+            fontSize: "12px", color: "var(--text-muted)",
+            background: "var(--surface-2)",
+            border: "1px solid var(--border)",
+            borderRadius: 6, padding: "4px 10px",
+          }}>
             <Icon size={12} />
             {label}
           </span>

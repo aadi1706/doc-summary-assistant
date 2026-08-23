@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Lightbulb, Loader, ChevronDown, ChevronUp } from "lucide-react";
+import { TbBulb, TbChevronDown, TbChevronUp } from "react-icons/tb";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function renderText(text) {
   const parts = text.split(/\*\*(.*?)\*\*/g);
@@ -50,8 +51,8 @@ function SuggestionCard({ suggestion, index }) {
           {suggestion.category}
         </span>
         {expanded
-          ? <ChevronUp size={14} color="var(--text-muted)" />
-          : <ChevronDown size={14} color="var(--text-muted)" />}
+          ? <TbChevronUp size={14} color="var(--text-muted)" />
+          : <TbChevronDown size={14} color="var(--text-muted)" />}
       </div>
 
       {expanded && (
@@ -123,7 +124,7 @@ export default function SuggestionsPanel({ doc }) {
         borderBottom: "1px solid var(--border)",
         display: "flex", alignItems: "center", gap: 8,
       }}>
-        <Lightbulb size={16} color="var(--accent)" />
+        <TbBulb size={16} color="var(--accent)" />
         <span style={{ fontWeight: 600, fontSize: "14px" }}>Improvement Suggestions</span>
       </div>
 
@@ -152,7 +153,7 @@ export default function SuggestionsPanel({ doc }) {
 
         {loading && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)", padding: "8px 0" }}>
-            <Loader size={14} style={{ animation: "spin 1s linear infinite" }} />
+            <AiOutlineLoading3Quarters size={14} style={{ animation: "spin 1s linear infinite" }} />
             <span style={{ fontSize: "13px" }}>Analysing document...</span>
           </div>
         )}
@@ -173,7 +174,7 @@ export default function SuggestionsPanel({ doc }) {
                 width: "fit-content",
               }}
             >
-              <Lightbulb size={13} />
+              <TbBulb size={13} />
               Regenerate
             </button>
           </div>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, Send, Loader, Bot, User } from "lucide-react";
+import { TbMessage, TbSend, TbRobot, TbUser } from "react-icons/tb";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { askDocument } from "../utils/api";
 
 const SUGGESTIONS = [
@@ -95,7 +96,7 @@ export default function ChatPanel({ doc }) {
         gap: 8,
         flexShrink: 0,
       }}>
-        <MessageSquare size={16} color="var(--accent)" />
+        <TbMessage size={16} color="var(--accent)" />
         <span style={{ fontWeight: 600, fontSize: "14px" }}>Ask the Document</span>
       </div>
 
@@ -164,7 +165,7 @@ export default function ChatPanel({ doc }) {
               maxWidth: "80%",
             }}>
               {msg.streaming && !msg.content
-                ? <Loader size={12} color="var(--text-muted)" style={{ animation: "spin 1s linear infinite" }} />
+                ? <AiOutlineLoading3Quarters size={12} color="var(--text-muted)" style={{ animation: "spin 1s linear infinite" }} />
                 : <span>{renderText(msg.content)}</span>
               }
             </div>
@@ -211,7 +212,7 @@ export default function ChatPanel({ doc }) {
             alignItems: "center",
           }}
         >
-          <Send size={15} color={loading || !input.trim() ? "var(--text-muted)" : "#fff"} />
+          <TbSend size={15} color={loading || !input.trim() ? "var(--text-muted)" : "#fff"} />
         </button>
       </div>
 

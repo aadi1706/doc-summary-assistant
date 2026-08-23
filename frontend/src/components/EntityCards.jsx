@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Users, Building2, Calendar, DollarSign, MapPin, Tag, Loader } from "lucide-react";
+import { TbUsers, TbBuilding, TbCalendar, TbCurrencyDollar, TbMapPin, TbTag } from "react-icons/tb";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { extractEntities } from "../utils/api";
 
 const ENTITY_CONFIG = [
-  { key: "people", label: "People", icon: Users, color: "#818cf8" },
-  { key: "organizations", label: "Organizations", icon: Building2, color: "#34d399" },
-  { key: "dates", label: "Dates", icon: Calendar, color: "#f59e0b" },
-  { key: "amounts", label: "Amounts", icon: DollarSign, color: "#22c55e" },
-  { key: "locations", label: "Locations", icon: MapPin, color: "#f472b6" },
-  { key: "key_terms", label: "Key Terms", icon: Tag, color: "#60a5fa" },
+  { key: "people", label: "People", icon: TbUsers, color: "#818cf8" },
+  { key: "organizations", label: "Organizations", icon: TbBuilding, color: "#34d399" },
+  { key: "dates", label: "Dates", icon: TbCalendar, color: "#f59e0b" },
+  { key: "amounts", label: "Amounts", icon: TbCurrencyDollar, color: "#22c55e" },
+  { key: "locations", label: "Locations", icon: TbMapPin, color: "#f472b6" },
+  { key: "key_terms", label: "Key Terms", icon: TbTag, color: "#60a5fa" },
 ];
 
 export default function EntityCards({ doc }) {
@@ -45,7 +46,7 @@ export default function EntityCards({ doc }) {
         alignItems: "center",
         gap: 8,
       }}>
-        <Tag size={16} color="var(--accent)" />
+        <TbTag size={16} color="var(--accent)" />
         <span style={{ fontWeight: 600, fontSize: "14px" }}>Entities & Key Info</span>
       </div>
 
@@ -75,7 +76,7 @@ export default function EntityCards({ doc }) {
 
         {loading && (
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
-            <Loader size={14} style={{ animation: "spin 1s linear infinite" }} />
+            <AiOutlineLoading3Quarters size={14} style={{ animation: "spin 1s linear infinite" }} />
             <span style={{ fontSize: "13px" }}>Analysing document...</span>
           </div>
         )}
