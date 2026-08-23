@@ -4,8 +4,8 @@ Upload any PDF or scanned image and get smart summaries, entity extraction, docu
 
 ## Live Demo
 
-- **Frontend:** (coming soon)
-- **Backend API:** (coming soon)
+- **Frontend:** https://doc-summary-assistant-ruby.vercel.app
+- **Backend API:** https://doc-summary-assistant-ruby.vercel.app
 
 ## Features
 
