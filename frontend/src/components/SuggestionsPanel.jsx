@@ -80,7 +80,7 @@ export default function SuggestionsPanel({ doc }) {
     setError("");
 
     try {
-      const res = await fetch("/api/summarize/suggestions", {
+      const res = await fetch("https://doc-summary-assistant-dacc.onrender.com/api/summarize/suggestions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: doc.text, doc_type: doc.doc_type }),
