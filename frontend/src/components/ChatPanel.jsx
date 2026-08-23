@@ -150,8 +150,8 @@ export default function ChatPanel({ doc }) {
               flexShrink: 0,
             }}>
               {msg.role === "user"
-                ? <User size={14} color="#fff" />
-                : <Bot size={14} color="var(--accent)" />
+                ? <TbUser size={14} color="#fff" />
+                : <TbRobot size={14} color="var(--accent)" />
               }
             </div>
             <div style={{

@@ -107,7 +107,7 @@ export default function SummaryPanel({ doc }) {
     setLoadingTakeaways(false);
   }
 
-  function handleTbDownload() {
+  function handleDownload() {
     const filename = doc.filename.replace(/\.[^.]+$/, "") + "_summary.txt";
     const full = [
       `DOCUMENT SUMMARY — ${doc.filename}`,
@@ -128,7 +128,7 @@ export default function SummaryPanel({ doc }) {
     URL.revokeObjectURL(url);
   }
 
-  async function handleTbCopy() {
+  async function handleCopy() {
     const full = summary + (takeaways.length ? "\n\nKey Takeaways:\n" + takeaways.map(t => `• ${t}`).join("\n") : "");
     await navigator.clipboard.writeText(full);
     setCopied(true);
@@ -247,7 +247,7 @@ export default function SummaryPanel({ doc }) {
                 padding: "14px 16px",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
-                  <ListTbChecks size={14} color="var(--accent)" />
+                  <TbListCheck size={14} color="var(--accent)" />
                   <span style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     Key Takeaways
                   </span>
@@ -255,7 +255,7 @@ export default function SummaryPanel({ doc }) {
 
                 {loadingTakeaways && takeaways.length === 0 && (
                   <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--text-muted)" }}>
-                    <Loader size={12} style={{ animation: "spin 1s linear infinite" }} />
+                    <AiOutlineLoading3Quarters size={12} style={{ animation: "spin 1s linear infinite" }} />
                     <span style={{ fontSize: "13px" }}>Extracting key points...</span>
                   </div>
                 )}
@@ -289,7 +289,7 @@ export default function SummaryPanel({ doc }) {
             {!loading && (
               <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
                 <button
-                  onClick={handleTbCopy}
+                  onClick={handleCopy}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "7px 14px", borderRadius: 7,
@@ -299,10 +299,10 @@ export default function SummaryPanel({ doc }) {
                   }}
                 >
                   {copied ? <TbCheck size={13} /> : <TbCopy size={13} />}
-                  {copied ? "Copied!" : "TbCopy"}
+                  {copied ? "Copied!" : "Copy"}
                 </button>
                 <button
-                  onClick={handleTbDownload}
+                  onClick={handleDownload}
                   style={{
                     display: "flex", alignItems: "center", gap: 6,
                     padding: "7px 14px", borderRadius: 7,

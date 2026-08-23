@@ -4,12 +4,12 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { extractEntities } from "../utils/api";
 
 const ENTITY_CONFIG = [
-  { key: "people", label: "People", icon: TbUsers, color: "#818cf8" },
-  { key: "organizations", label: "Organizations", icon: TbBuilding, color: "#34d399" },
-  { key: "dates", label: "Dates", icon: TbCalendar, color: "#f59e0b" },
-  { key: "amounts", label: "Amounts", icon: TbCurrencyDollar, color: "#22c55e" },
-  { key: "locations", label: "Locations", icon: TbMapPin, color: "#f472b6" },
-  { key: "key_terms", label: "Key Terms", icon: TbTag, color: "#60a5fa" },
+  { key: "people", label: "People", icon: TbUsers, color: "var(--text-muted)" },
+  { key: "organizations", label: "Organizations", icon: TbBuilding, color: "var(--text-muted)" },
+  { key: "dates", label: "Dates", icon: TbCalendar, color: "var(--text-muted)" },
+  { key: "amounts", label: "Amounts", icon: TbCurrencyDollar, color: "var(--text-muted)" },
+  { key: "locations", label: "Locations", icon: TbMapPin, color: "var(--text-muted)" },
+  { key: "key_terms", label: "Key Terms", icon: TbTag, color: "var(--text-muted)" },
 ];
 
 export default function EntityCards({ doc }) {
@@ -105,9 +105,9 @@ export default function EntityCards({ doc }) {
                       <span
                         key={i}
                         style={{
-                          background: `${color}18`,
-                          border: `1px solid ${color}40`,
-                          color: color,
+                          background: "var(--surface-2)",
+                          border: "1px solid var(--border)",
+                          color: "var(--text)",
                           borderRadius: 6,
                           padding: "3px 10px",
                           fontSize: "12px",
