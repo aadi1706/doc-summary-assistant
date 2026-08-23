@@ -1,9 +1,15 @@
 import pymupdf as fitz  # PyMuPDF
-import pytesseract
 from PIL import Image
 import io
 import re
 from typing import Optional
+
+# Tesseract is optional — not available on all hosting environments
+try:
+    import pytesseract
+    TESSERACT_AVAILABLE = True
+except ImportError:
+    TESSERACT_AVAILABLE = False
 
 
 def extract_text_from_pdf(file_bytes: bytes) -> dict:
@@ -38,10 +44,14 @@ def extract_text_from_pdf(file_bytes: bytes) -> dict:
 def extract_text_from_image(file_bytes: bytes) -> dict:
     """
     Extract text from an image file using Tesseract OCR.
+    Falls back gracefully if Tesseract is not installed.
     """
-    image = Image.open(io.BytesIO(file_bytes))
+    if not TESSERACT_AVAILABLE:
+        raise RuntimeError(
+            "OCR is not available on this server. Please upload a PDF instead."
+        )
 
-    # Run OCR
+    image = Image.open(io.BytesIO(file_bytes))
     text = pytesseract.image_to_string(image, config="--psm 3")
 
     return {
